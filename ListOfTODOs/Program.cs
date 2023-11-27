@@ -37,11 +37,11 @@ if (!app.Environment.IsDevelopment())
 }
 
 //Borde mina endpoints hamna i egen fil som i klappverkstan? 
-app.MapPost("/ItemIndex", (IRepository repository, ToDoItem item) =>
+app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
     {
-        var result = repository.CreateItem(item);
+        var result = await repository.CreateItem(item);
 
-        return Results.Ok("Item added to list.");
+        return Results.Ok($"Item {result} added to list.");
         //if (repository.CreateItem(item))
         //{
         //    return Results.Ok(repository.GetAllItems());

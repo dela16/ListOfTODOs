@@ -16,7 +16,7 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 
 		public async Task<bool> CreateItem(ToDoItem item)
 		{
-			await _dbContext.AddAsync(item); //Sätt i variabel senare så du kan kolla så den inte är null osv. 
+			await _dbContext.Items.AddAsync(item); //Sätt i variabel senare så du kan kolla så den inte är null osv. 
 			await _dbContext.SaveChangesAsync();
 			return true; 
 		}

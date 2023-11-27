@@ -5,7 +5,7 @@
 }
 
 <form id="item-form">
-    Activity: <input type="text" name="ItemToDo" value="h" />
+    Activity: <input type="text" name="ItemToDo" value="" />
 </form>
 
 <button class="btn btn-dark" id="post-item">Add item</button>
@@ -21,9 +21,9 @@
 
 			const itemInfo =
 			{
-				Activity: itemForm.namedItem("postItem").value,
+				Activity: itemForm.namedItem("ItemToDo").value,
 			};
-			postItemInfo("/todoItems", itemInfo);
+			postItemInfo("/items", itemInfo);
         })
 
 			//Är det här som vi lägger till det i databasen? Eller vad gör detta? SKriver till fil? 
