@@ -1,5 +1,3 @@
-using ToDoList.Properties.DAL.Storages;
-using Microsoft.AspNetCore.Mvc;
 using ToDoList.Properties.DAL.Models;
 using ListOfTODOs.Properties.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -12,8 +10,6 @@ var server = "localhost";
 var database = "ToDoListDb";
 
 var connectionString = $"Server={server};Database={database};Trusted_Connection=True;TrustServerCertificate=True";
-// Add services to the container.
-
 
 builder.Services.AddDbContext<ToDoListDbContext>(options =>
 {
@@ -21,7 +17,6 @@ builder.Services.AddDbContext<ToDoListDbContext>(options =>
 });
 
 builder.Services.AddTransient<IRepository, Repository>();
-//builder.Services.AddSingleton<ItemStorage>();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -48,6 +43,13 @@ app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
         //}
         //return Results.BadRequest("Some reason.");//Vad ska skickas tillbaka? 
     });
+
+app.MapGet("/items", async (IRepository repository) =>
+{
+    var result = await repository.GetAllItems();
+
+    return result.Count > 0 ? Results.Ok(result): Results.NotFound("No items in your to do list.");
+});
 
 
 

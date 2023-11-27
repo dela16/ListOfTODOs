@@ -10,11 +10,34 @@
 
 <button class="btn btn-dark" id="post-item">Add item</button>
 
+<button class="btn btn-dark" id="get-item">Show items in list</button>
+<ul class="mt-3" id="itemsOnToDoList"></ul>
 
 
 @section Scripts{
 	<script>
         let postItem = document.getElementById("post-item");
+		let itemsOnToDoList = document.getElementById("itemsOnToDoList"); 
+		const getAllItems = document.getElementById("itemsList");
+
+		getAllItems.addEventListener('click', () => {
+			showAllItemsOnList();
+		});
+
+
+		const showAllItemsOnList = () => {
+			itemsOnToDoList.innerHTML = ""; 
+			fetch("/items")
+			.then(respons => respons.json())
+			.then(data => {
+				for(let i = 0; i < data.length; i++){
+					const li = document.createElement("li");
+					li.innerText = data[i].activity;
+
+					itemsOnToDoList.appendChild(li);
+				}
+			})
+		};
 
         postItem.addEventListener('click', () => {
 			const itemForm = document.getElementById("item-form").elements;
