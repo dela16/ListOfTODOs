@@ -1,0 +1,44 @@
+﻿@page
+@model ListOfTODOs.Pages.ItemIndexModel
+@{
+    ViewData["Title"] = "ToDo List";
+}
+
+<form id="item-form">
+    Activity: <input type="text" name="ItemToDo" value="h" />
+</form>
+
+<button class="btn btn-dark" id="post-item">Add item</button>
+
+
+
+@section Scripts{
+	<script>
+        let postItem = document.getElementById("post-item");
+
+        postItem.addEventListener('click', () => {
+			const itemForm = document.getElementById("item-form").elements;
+
+			const itemInfo =
+			{
+				Activity: itemForm.namedItem("postItem").value,
+			};
+			postItemInfo("/todoItems", itemInfo);
+        })
+
+			//Är det här som vi lägger till det i databasen? Eller vad gör detta? SKriver till fil? 
+			const postItemInfo = (url = '', data = {}) => {
+			console.log(JSON.stringify(data))
+			fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			})
+				.then(response => console.log(response));
+		}
+
+
+    </script>
+}

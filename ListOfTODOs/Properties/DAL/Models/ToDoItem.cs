@@ -1,8 +1,14 @@
-﻿namespace ToDoList.Properties.DAL.Models
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace ToDoList.Properties.DAL.Models
 {
 	public class ToDoItem
 	{
+		//[BsonElement("id")]
+		//[BsonId]
 		public int Id { get; set; }
-		public string Item { get; set; }
+
+		//[BsonElement("activity")]
+		public string activity { get; set; }
 	}
 }
