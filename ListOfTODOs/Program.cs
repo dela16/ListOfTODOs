@@ -43,16 +43,19 @@ app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
         var result = await repository.CreateItem(item);
 
         return Results.Ok($"Item {result} added to list.");
-        //if (repository.CreateItem(item))
-        //{
-        //    return Results.Ok(repository.GetAllItems());
-        //}
-        //return Results.BadRequest("Some reason.");//Vad ska skickas tillbaka? 
     });
 
-app.MapPut("/items/{id}", async (IRepository repository, ToDoItem item, int id) =>
+app.MapPut("/items/{id}", async (IRepository repository, ToDoItem updateItem, int id) =>
 {
-    var result = await repository.UpdateItemById(item, id);
+	if (id <= 0 || updateItem is null)
+	{
+		return Results.BadRequest("Invalid item id.");
+	}
+
+	var result = await repository.UpdateItemById(updateItem, id);
+
+    if (result.Id != id)
+        return Results.NotFound($"{result.Id} was not found among items.");
 
     return Results.Ok($"{result} was updated.");
 });
@@ -60,7 +63,11 @@ app.MapPut("/items/{id}", async (IRepository repository, ToDoItem item, int id) 
 app.MapDelete("/items/{id}", async (IRepository repository, int id) =>
 {
     var result = await repository.DeleteItemById(id);
-    return Results.Ok("Item was deleted.");
+
+	if (id <= 0) //Om id inte finns i lista? 
+		return Results.BadRequest("Invalid item id.");
+
+	return Results.Ok("Item was deleted.");
 });
 
 
