@@ -9,7 +9,7 @@
 </form>
 
 <form id="list-items-form">
-	<ul class="mt-3" id="itemsOnToDoList"></ul>
+	<ul class="mt-3" id="itemsOnToDoList"><li><input type="checkbox" id="bock" />Såhär vill jag att det ska se ut</li></ul>
 </form>
 
 <form id="delete-item-form">
@@ -30,23 +30,48 @@
 		let deleteItemBtn = document.getElementById("delete-item");
 		let updateItemBtn = document.getElementById("update-item");
 
-		const showAllItemsInList = () => {
+		function showAllItemsInList(){
 			fetch("/items")
 			.then(respons => respons.json())
 			.then(data => {
 				for(let i = 1; i < data.length; i++){
-					const li = document.createElement("li");
+					const li = document.createElement("li"); //Nu har jag ju fått till boxen. Hur lägga till dupliceringar?
 					const checkbox = document.createElement("input");
-					checkbox.type = "checkbox"
+					checkbox.type = "checkbox";
+					//check(checkbox);
 					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
 					li.appendChild(checkbox);
 
 					itemsOnToDoList.appendChild(li);
+
+						////const li = document.createElement("li"); //Nu har jag ju fått till boxen. Hur lägga till dupliceringar?
+						////const checkbox = document.createElement("input");
+						////checkbox.type = "checkbox";
+						////check(checkbox);
+						//const rad = document.createElement("li");
+						//const ruta = "bock";
+						//rad.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
+						////rad.appendChild(checkbox);
+						//itemsOnToDoList.appendChild(ruta);
+						//itemsOnToDoList.appendChild(rad);
+
 				}
 			})
 		};
 
 		showAllItemsInList();
+
+		function check(checkbox){ //Gå igenom listan med checkboxar och om den är bockad,onclick? så stryk över ord och delete från db. Slå ihop denna mede delete funktion?
+			for(let i = 1; i < data.length; i++){
+				const li = document.createElement("li");
+				const checkbox = document.createElement("input");
+				checkbox.type = "checkbox";
+				if (checkbox[i].checked == true) {
+					li[i].value = li[i].style.textDecoration = "line-through";
+				}
+			}
+			
+		}
 
 		postItemBtn.addEventListener('click', () => {
 			const postItemForm = document.getElementById("add-item-form").elements;
@@ -103,7 +128,7 @@
 		}
 
 		deleteItemBtn.addEventListener('click', () => {
-			const deleteItemForm = document.getElementById("delete-item-form").elements;
+			const deleteItemForm = document.getElementById("delete-item-form").elements; //Byta ut denna raden mot checkbox. 
 
 			const deleteItemInfo = deleteItemForm.namedItem("ItemToDelete").value;
 
