@@ -8,10 +8,8 @@
 	Activity: <input type="text" name="ItemToDo" value="" /> <button class="btn btn-dark" id="post-item">Add item</button>
 </form>
 
-
-
 <form id="list-items-form">
-	<ul class="mt-3" id="itemsOnToDoList"></ul> 
+	<ul class="mt-3" id="itemsOnToDoList"></ul>
 </form>
 
 <form id="delete-item-form">
@@ -38,7 +36,11 @@
 			.then(data => {
 				for(let i = 1; i < data.length; i++){
 					const li = document.createElement("li");
+					const checkbox = document.createElement("input");
+					checkbox.type = "checkbox"
 					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
+					li.appendChild(checkbox);
+
 					itemsOnToDoList.appendChild(li);
 				}
 			})
