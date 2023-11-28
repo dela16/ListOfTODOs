@@ -36,7 +36,7 @@
 			fetch("/items")
 			.then(respons => respons.json())
 			.then(data => {
-				for(let i = 0; i < data.length; i++){
+				for(let i = 1; i < data.length; i++){
 					const li = document.createElement("li");
 					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
 					itemsOnToDoList.appendChild(li);
