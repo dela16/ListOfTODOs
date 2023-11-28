@@ -31,7 +31,13 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-//Borde mina endpoints hamna i egen fil som i klappverkstan? 
+app.MapGet("/items", async (IRepository repository) =>
+{
+	var result = await repository.GetAllItems();
+
+	return result.Count > 0 ? Results.Ok(result) : Results.NotFound("No items in your to do list.");
+});
+
 app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
     {
         var result = await repository.CreateItem(item);
@@ -44,13 +50,12 @@ app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
         //return Results.BadRequest("Some reason.");//Vad ska skickas tillbaka? 
     });
 
-app.MapGet("/items", async (IRepository repository) =>
+
+app.MapDelete("/items/{id}", async (IRepository repository, int id) =>
 {
-    var result = await repository.GetAllItems();
-
-    return result.Count > 0 ? Results.Ok(result): Results.NotFound("No items in your to do list.");
+    var result = await repository.DeleteItemById(id);
+    return Results.Ok("Item was deleted.");
 });
-
 
 
 app.UseHttpsRedirection();

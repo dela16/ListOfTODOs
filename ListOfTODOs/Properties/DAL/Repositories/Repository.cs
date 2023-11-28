@@ -26,5 +26,13 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 		{
 			return await _dbContext.Items.ToListAsync(); 
 		}
+
+		public async Task<bool> DeleteItemById(int id)
+		{
+			var itemToBeDeleted = await _dbContext.Items.FindAsync(id);
+			_dbContext.Remove(itemToBeDeleted);
+			await _dbContext.SaveChangesAsync();
+			return true; 
+		}
 	}
 }

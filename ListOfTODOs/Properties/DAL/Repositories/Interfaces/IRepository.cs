@@ -7,5 +7,7 @@ namespace ListOfTODOs.Properties.DAL.Repositories.Interfaces
 		Task<bool> CreateItem(ToDoItem item);
 
 		public Task<List<ToDoItem>> GetAllItems();
+
+		public Task<bool> DeleteItemById(int id);
 	}
 }
