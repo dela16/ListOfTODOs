@@ -50,6 +50,12 @@ app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
         //return Results.BadRequest("Some reason.");//Vad ska skickas tillbaka? 
     });
 
+app.MapPut("/items/{id}", async (IRepository repository, ToDoItem item, int id) =>
+{
+    var result = await repository.UpdateItemById(item, id);
+
+    return Results.Ok($"{result} was updated.");
+});
 
 app.MapDelete("/items/{id}", async (IRepository repository, int id) =>
 {
