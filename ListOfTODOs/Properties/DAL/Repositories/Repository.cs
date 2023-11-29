@@ -16,6 +16,12 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 
 		public async Task<bool> CreateItem(ToDoItem item)
 		{
+			if (item == null)
+			{
+				Results.BadRequest("Activity cannot be empty."); //Detta funkar inte, inte med item.activity heller. 
+				throw new ArgumentNullException(nameof(item));
+			}
+
 			var result = await _dbContext.Items.AddAsync(item);
 
 			if (result is null)

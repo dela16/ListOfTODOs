@@ -40,6 +40,9 @@ app.MapGet("/items", async (IRepository repository) =>
 
 app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
     {
+		if (item.Activity is null)
+			Results.BadRequest("You need to write an activity.");
+
         var result = await repository.CreateItem(item);
 
         return Results.Ok($"Item {result} added to list.");

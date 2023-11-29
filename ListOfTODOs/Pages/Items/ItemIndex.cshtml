@@ -9,11 +9,18 @@
 </form>
 
 <form id="list-items-form">
-	<ul class="mt-3" id="itemsOnToDoList"><li><input type="checkbox" id="bock" />Såhär vill jag att det ska se ut</li></ul>
+	<nav id="taskList">
+		<ul class="mt-3" id="itemsOnToDoList">
+			<li id="rad">
+				<input type="checkbox" id="bock" />Såhär vill jag att det ska se ut
+			</li>
+		</ul>
+	</nav>
+	
 </form>
 
 <form id="delete-item-form">
-	Id: <input type="number" name="ItemToDelete" value="" /> <button class="btn btn-danger" id="delete-item">Delete</button>
+	Id: <input type="number" name="ItemToDelete" value="" /> <button class="btn btn-success" id="delete-item">Complete Task / Remove</button>
 </form>
 
 
@@ -30,31 +37,20 @@
 		let deleteItemBtn = document.getElementById("delete-item");
 		let updateItemBtn = document.getElementById("update-item");
 
+		let liRow = document.getElementById("rad");
+		let checkboxOnRow = document.getElementById("bock");
+
 		function showAllItemsInList(){
 			fetch("/items")
 			.then(respons => respons.json())
 			.then(data => {
 				for(let i = 1; i < data.length; i++){
-					const li = document.createElement("li"); //Nu har jag ju fått till boxen. Hur lägga till dupliceringar?
 					const checkbox = document.createElement("input");
 					checkbox.type = "checkbox";
-					//check(checkbox);
+					const li = document.createElement("li");
 					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
-					li.appendChild(checkbox);
-
+					li.appendChild(checkbox); //Den här måste komma efter innerText annars får jag ingen ruta alls.
 					itemsOnToDoList.appendChild(li);
-
-						////const li = document.createElement("li"); //Nu har jag ju fått till boxen. Hur lägga till dupliceringar?
-						////const checkbox = document.createElement("input");
-						////checkbox.type = "checkbox";
-						////check(checkbox);
-						//const rad = document.createElement("li");
-						//const ruta = "bock";
-						//rad.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
-						////rad.appendChild(checkbox);
-						//itemsOnToDoList.appendChild(ruta);
-						//itemsOnToDoList.appendChild(rad);
-
 				}
 			})
 		};
@@ -103,7 +99,7 @@
 			.then(response => console.log(response));
 		}
 
-		updateItemBtn.addEventListener('click', () => {
+		updateItemBtn.addEventListener('click', () => { //Denna uppdateras inte direkt, bara i db. Måste ladda om sidan.
 			const updateItemForm = document.getElementById("item-to-update-form").elements;
 			const updateItemId = updateItemForm.namedItem("ItemId").value;
 			const updateItemInfo = {Activity: updateItemForm.namedItem("ItemToUpdate").value};
@@ -139,7 +135,7 @@
 			deleteFunction("/items/" + deleteItemInfo, {});
 			});
 
-		const deleteFunction = (url = '', data = {}) => { //Återigen, kolla vad denna gör. Behöver jag den? 
+		const deleteFunction = (url = '', data = {}) => { //Återigen, kolla vad denna gör. Behöver jag den? Denna gör den aktiva kopplingen till db och raderar? 
 			console.log(JSON.stringify(data))
 			fetch(url, {
 				method: 'DELETE',
