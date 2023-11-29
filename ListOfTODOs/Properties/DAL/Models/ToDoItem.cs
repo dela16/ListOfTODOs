@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-
+﻿
 namespace ToDoList.Properties.DAL.Models
 {
 	public class ToDoItem

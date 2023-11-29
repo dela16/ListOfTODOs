@@ -3,6 +3,8 @@ using ListOfTODOs.Properties.DAL.Contexts;
 using Microsoft.EntityFrameworkCore;
 using ListOfTODOs.Properties.DAL.Repositories.Interfaces;
 using ListOfTODOs.Properties.DAL.Repositories;
+using Microsoft.IdentityModel.Tokens;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,25 +42,26 @@ app.MapGet("/items", async (IRepository repository) =>
 
 app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
     {
-		if (item.Activity is null)
+		if (item.Activity.IsNullOrEmpty())//Eller bara item.activity is null
 			Results.BadRequest("You need to write an activity.");
 
         var result = await repository.CreateItem(item);
 
-        return Results.Ok($"Item {result} added to list.");
+        return Results.Ok($"Item {result} was added to list.");
     });
 
 app.MapPut("/items/{id}", async (IRepository repository, ToDoItem updateItem, int id) =>
 {
-	if (id <= 0 || updateItem is null)
+	if (id <= 0 || updateItem.Activity is null)//Denna räcker inte.
 	{
 		return Results.BadRequest("Invalid item id.");
 	}
 
-	var result = await repository.UpdateItemById(updateItem, id);
+	var result = await repository.UpdateItemById(updateItem, id);//här hämtar jag mitt item på ett visst id och lägger i result. 
+	//Är denna som i api_lab2 bara bättre och kortare eller har jag missat någon bit?  på edit student. 
 
     if (result.Id != id)
-        return Results.NotFound($"{result.Id} was not found among items.");
+        return Results.NotFound($"{result.Id} No item with that id."); //Är det såhär man skriver den? 
 
     return Results.Ok($"{result} was updated.");
 });
@@ -67,10 +70,10 @@ app.MapDelete("/items/{id}", async (IRepository repository, int id) =>
 {
     var result = await repository.DeleteItemById(id);
 
-	if (id <= 0) //Om id inte finns i lista? 
-		return Results.BadRequest("Invalid item id.");
+	if (id <= 0) //Om id inte finns i lista? ex. raderad sen tidigare? Måste jag ha en getItemById?
+		return Results.BadRequest("Item could not be found, try anothe id.");
 
-	return Results.Ok("Item was deleted.");
+	return Results.Ok("Item deleted");
 });
 
 

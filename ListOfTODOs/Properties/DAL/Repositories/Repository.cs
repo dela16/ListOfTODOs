@@ -18,18 +18,12 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 		{
 			if (item.Activity == null)
 			{
-				Results.BadRequest("Activity cannot be empty."); //Detta funkar inte, inte med item.activity heller. 
+				Results.BadRequest("Activity cannot be empty."); //Detta funkar inte
 				return false;
 				throw new ArgumentNullException(nameof(item));
 			}
 
-			var result = await _dbContext.Items.AddAsync(item);
-
-			if (result is null)
-			{
-				Results.BadRequest("You have to add an item.");
-				return false;
-			}
+			await _dbContext.Items.AddAsync(item);
 				
 			//TODO Vill vi att programmet ska krascha and throw exception? 
 
@@ -45,7 +39,7 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 				Results.BadRequest("Sorry, no item with that id.");
 			//TODO Vill vi att programmet ska krascha and throw exception? 
 
-			existingItem.Activity = updatedItem.Activity;
+			existingItem.Activity = updatedItem.Activity;//få denna förklarad.
 
 			_dbContext.Items.Update(existingItem);
 			await _dbContext.SaveChangesAsync();
@@ -60,6 +54,12 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 			return await _dbContext.Items.ToListAsync(); 
 		}
 
+		public async Task<ToDoItem> GetItemById(int id)
+		{
+			var item = await _dbContext.Items.FindAsync(id);
+			return item;
+		}
+
 		public async Task<bool> DeleteItemById(int id)
 		{
 			var itemToBeDeleted = await _dbContext.Items.FindAsync(id);
@@ -67,6 +67,7 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 			if (itemToBeDeleted is null)
 			{
 				Results.BadRequest("You have to chose an id");
+				
 			}
 			else if (itemToBeDeleted.Id != id)
 			{

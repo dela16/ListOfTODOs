@@ -9,6 +9,7 @@ namespace ListOfTODOs.Properties.DAL.Repositories.Interfaces
 		public Task<ToDoItem> UpdateItemById(ToDoItem item, int id);
 
 		public Task<List<ToDoItem>> GetAllItems(); 
+		public Task<ToDoItem> GetItemById(int id);
 
 		public Task<bool> DeleteItemById(int id);
 	}
