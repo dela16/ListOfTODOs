@@ -16,16 +16,21 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 
 		public async Task<bool> CreateItem(ToDoItem item)
 		{
-			if (item == null)
+			if (item.Activity == null)
 			{
 				Results.BadRequest("Activity cannot be empty."); //Detta funkar inte, inte med item.activity heller. 
+				return false;
 				throw new ArgumentNullException(nameof(item));
 			}
 
 			var result = await _dbContext.Items.AddAsync(item);
 
 			if (result is null)
+			{
 				Results.BadRequest("You have to add an item.");
+				return false;
+			}
+				
 			//TODO Vill vi att programmet ska krascha and throw exception? 
 
 			await _dbContext.SaveChangesAsync();

@@ -5,28 +5,27 @@
 }
 
 <form id="add-item-form">
-	Activity: <input type="text" name="ItemToDo" value="" /> <button class="btn btn-dark" id="post-item">Add item</button>
+	Activity: <input type="text" name="ItemToDo" value="" placeholder="Add an activity"/> <button class="btn btn-dark" id="post-item">Add item</button>
 </form>
 
 <form id="list-items-form">
 	<nav id="taskList">
 		<ul class="mt-3" id="itemsOnToDoList">
-			<li id="rad">
+			<li>
 				<input type="checkbox" id="bock" />Såhär vill jag att det ska se ut
 			</li>
 		</ul>
 	</nav>
-	
 </form>
 
 <form id="delete-item-form">
-	Id: <input type="number" name="ItemToDelete" value="" /> <button class="btn btn-success" id="delete-item">Complete Task / Remove</button>
+	Id: <input type="number" name="ItemToDelete" value="" placeholder="What id to delete?" /> <button class="btn btn-success" id="delete-item">Complete Task / Remove</button>
 </form>
 
 
 <form id="item-to-update-form">
-	Id: <input type="number" name="ItemId" value=""/>
-	Edit: <input type="text" name="ItemToUpdate" value="" /> <button class="btn btn-dark" id="update-item">Update</button>
+	Id: <input type="number" name="ItemId" value="" placeholder="What id to edit?"/>
+	Edit: <input type="text" name="ItemToUpdate" value="" placeholder="Re-write your task"/> <button class="btn btn-dark" id="update-item">Update</button>
 </form>
 
 
@@ -37,37 +36,34 @@
 		let deleteItemBtn = document.getElementById("delete-item");
 		let updateItemBtn = document.getElementById("update-item");
 
-		let liRow = document.getElementById("rad");
-		let checkboxOnRow = document.getElementById("bock");
-
 		function showAllItemsInList(){
 			fetch("/items")
 			.then(respons => respons.json())
 			.then(data => {
 				for(let i = 1; i < data.length; i++){
 					const checkbox = document.createElement("input");
+						const li = document.createElement("li");
 					checkbox.type = "checkbox";
-					const li = document.createElement("li");
+						checkbox.addEventListener('click', () => {
+							li.style.textDecoration = "line-through"
+						});
+						console.log("here");
 					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
-					li.appendChild(checkbox); //Den här måste komma efter innerText annars får jag ingen ruta alls.
+					li.appendChild(checkbox);
+
+					//const deleteBtn = document.createElement("button");
+					//deleteBtn.addEventListener('click', (event){
+					//	delete();
+					//});
 					itemsOnToDoList.appendChild(li);
+					//itemsOnToDoList.appendChild(deleteBtn);
 				}
 			})
 		};
 
-		showAllItemsInList();
 
-		function check(checkbox){ //Gå igenom listan med checkboxar och om den är bockad,onclick? så stryk över ord och delete från db. Slå ihop denna mede delete funktion?
-			for(let i = 1; i < data.length; i++){
-				const li = document.createElement("li");
-				const checkbox = document.createElement("input");
-				checkbox.type = "checkbox";
-				if (checkbox[i].checked == true) {
-					li[i].value = li[i].style.textDecoration = "line-through";
-				}
-			}
-			
-		}
+
+		showAllItemsInList();
 
 		postItemBtn.addEventListener('click', () => {
 			const postItemForm = document.getElementById("add-item-form").elements;
@@ -75,6 +71,9 @@
 			const itemInfo =
 			{
 				Activity: postItemForm.namedItem("ItemToDo").value
+				//if(postItemForm.namedItem("ItemToDo").value is null){
+				//	break;
+				//}
 			};
 			
 			const clearInputField = {
@@ -85,6 +84,9 @@
 
         })
 
+		itemsOnToDoList.addEventListener('click', () => {
+			li.style.textDecoration = "line.through"; 
+		})
 
 		//vad gör denna?
 		const postItemInfo = (url = '', data = {}) => {
@@ -123,7 +125,8 @@
 			.then(response => console.log(response));
 		}
 
-		deleteItemBtn.addEventListener('click', () => {
+
+			deleteItemBtn.addEventListener('click', () => {
 			const deleteItemForm = document.getElementById("delete-item-form").elements; //Byta ut denna raden mot checkbox. 
 
 			const deleteItemInfo = deleteItemForm.namedItem("ItemToDelete").value;
@@ -146,6 +149,8 @@
 			})
 				.then(response => console.log(response));
 		}
+		
+		
 
 
     </script>
