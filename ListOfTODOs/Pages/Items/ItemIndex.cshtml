@@ -78,13 +78,17 @@
 				Activity: postItemForm.namedItem("ItemToDo").value=''
 			};
 
-			await postItemInfo("/items", itemInfo);
+			let result = await postItemInfo("/items", itemInfo);
+			if(result.status != 200){
+				alert(`status = ${result.status}, try again.`);
+			}
+
 			await updateItemList();
         })
 
 		async function postItemInfo(url = '', data = {}){
 		console.log(JSON.stringify(data))
-		fetch(url, {
+		return fetch(url, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -141,8 +145,7 @@
 			})
 		}
 
-
-
+		updateItemList();
 
     </script>
 }

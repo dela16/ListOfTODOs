@@ -43,7 +43,8 @@ app.MapGet("/items", async (IRepository repository) =>
 app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
     {
 		if (item.Activity.IsNullOrEmpty())//Eller bara item.activity is null
-			Results.BadRequest("You need to write an activity.");
+			return Results.BadRequest("You need to write an activity.");
+			
 
         var result = await repository.CreateItem(item);
 
