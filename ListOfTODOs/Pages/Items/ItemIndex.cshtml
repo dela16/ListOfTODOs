@@ -44,9 +44,12 @@
 					const checkbox = document.createElement("input");
 						const li = document.createElement("li");
 					checkbox.type = "checkbox";
-						checkbox.addEventListener('click', () => {
+					if(checkbox.checked=true){
 							li.style.textDecoration = "line-through"
-						});
+					}
+						//checkbox.addEventListener('click', () => {
+						//	li.style.textDecoration = "line-through" //Jag får i konsol online att li is not defined. Varför?
+						//});
 						console.log("here");
 					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
 					li.appendChild(checkbox);
