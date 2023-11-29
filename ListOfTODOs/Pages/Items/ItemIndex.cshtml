@@ -23,10 +23,16 @@
 </form>
 
 
-<form id="item-to-update-form">
+<form id="item-to-edit-form">
 	Id: <input type="number" name="ItemId" value="" placeholder="What id to edit?"/>
-	Edit: <input type="text" name="ItemToUpdate" value="" placeholder="Re-write your task"/> <button class="btn btn-dark" id="update-item">Update</button>
+	Edit: <input type="text" name="ItemToEdit" value="" placeholder="Re-write your task"/> <button class="btn btn-dark" id="edit-item">Edit</button>
 </form>
+<div>
+	<br />
+	<h2>Info</h2>
+	<p>Om du bara vill markera bort en aktivitet så bockar du av rutan. Vill du radera en aktivitet helt från listan och databasen så skriver du in Id och klickar på den gröna knappen.</p>
+</div>
+
 
 
 @section Scripts{
@@ -34,9 +40,9 @@
         let postItemBtn = document.getElementById("post-item");
 		let itemsOnToDoList = document.getElementById("itemsOnToDoList");
 		let deleteItemBtn = document.getElementById("delete-item");
-		let updateItemBtn = document.getElementById("update-item");
+		let editItemBtn = document.getElementById("edit-item");
 
-		function showAllItemsInList(){
+		async function updateItemList(){
 			fetch("/items")
 			.then(respons => respons.json())
 			.then(data => {
@@ -55,46 +61,28 @@
 						
 					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
 					li.appendChild(checkbox);
-
-					//const deleteBtn = document.createElement("button");
-					//deleteBtn.addEventListener('click', (event){
-					//	delete();
-					//});
 					itemsOnToDoList.appendChild(li);
-					//itemsOnToDoList.appendChild(deleteBtn);
 				}
 			})
 		};
 
-
-
-		showAllItemsInList();
-
-		postItemBtn.addEventListener('click', () => {
+		postItemBtn.addEventListener('click', async () => {
 			const postItemForm = document.getElementById("add-item-form").elements;
 
 			const itemInfo =
 			{
 				Activity: postItemForm.namedItem("ItemToDo").value
-				//if(postItemForm.namedItem("ItemToDo").value is null){
-				//	break;
-				//}
 			};
 			
 			const clearInputField = {
 				Activity: postItemForm.namedItem("ItemToDo").value=''
 			};
 
-			postItemInfo("/items", itemInfo);
-
+			await postItemInfo("/items", itemInfo);
+			await updateItemList();
         })
 
-		itemsOnToDoList.addEventListener('click', () => {
-			li.style.textDecoration = "line.through"; 
-		})
-
-		//vad gör denna?
-		const postItemInfo = (url = '', data = {}) => {
+		async function postItemInfo(url = '', data = {}){
 		console.log(JSON.stringify(data))
 		fetch(url, {
 			method: 'POST',
@@ -103,22 +91,22 @@
 			},
 			body: JSON.stringify(data)
 		})
-			.then(response => console.log(response));
 		}
 
-		updateItemBtn.addEventListener('click', () => { //Denna uppdateras inte direkt, bara i db. Måste ladda om sidan.
-			const updateItemForm = document.getElementById("item-to-update-form").elements;
-			const updateItemId = updateItemForm.namedItem("ItemId").value;
-			const updateItemInfo = {Activity: updateItemForm.namedItem("ItemToUpdate").value};
+		editItemBtn.addEventListener('click', async () => { //Denna uppdateras inte direkt, bara i db. Måste ladda om sidan.
+			const editItemForm = document.getElementById("item-to-edit-form").elements;
+			const editItemId = editItemForm.namedItem("ItemId").value;
+			const editItemInfo = {Activity: editItemForm.namedItem("ItemToEdit").value};
 
 			const clearInputField = {
-				Activity: updateItemForm.namedItem("ItemToUpdate").value=''
+				Activity: editItemForm.namedItem("ItemToEdit").value=''
 			};
 
-			putItemInfo("/items/" + updateItemId, updateItemInfo); 
+			await putItemInfo("/items/" + editItemId, editItemInfo);
+			await updateItemList();
 		})
 
-		const putItemInfo = (url = '', data = {}) => { //återigen denna. 
+		async function putItemInfo (url = '', data = {}){
 			console.log(JSON.stringify(data))
 			fetch(url,{
 				method: 'PUT',
@@ -127,24 +115,23 @@
 				},
 				body: JSON.stringify(data)
 			})
-			.then(response => console.log(response));
 		}
 
 
-			deleteItemBtn.addEventListener('click', () => {
-			const deleteItemForm = document.getElementById("delete-item-form").elements; //Byta ut denna raden mot checkbox. 
+		deleteItemBtn.addEventListener('click', async () => {
+		const deleteItemForm = document.getElementById("delete-item-form").elements; //Byta ut denna raden mot checkbox. 
 
-			const deleteItemInfo = deleteItemForm.namedItem("ItemToDelete").value;
+		const deleteItemInfo = deleteItemForm.namedItem("ItemToDelete").value;
 
-			const clearInputField = {
-				Activity: deleteItemForm.namedItem("ItemToDelete").value = ''
-			};
+		const clearInputField = {
+			Activity: deleteItemForm.namedItem("ItemToDelete").value = ''
+		};
 
-			deleteFunction("/items/" + deleteItemInfo, {});
-			});
+			await deleteFunction("/items/" + deleteItemInfo, {});
+			await updateItemList();
+		});
 
-		const deleteFunction = (url = '', data = {}) => { //Återigen, kolla vad denna gör. Behöver jag den? Denna gör den aktiva kopplingen till db och raderar? 
-			console.log(JSON.stringify(data))
+		async function deleteFunction(url = '', data = {}){
 			fetch(url, {
 				method: 'DELETE',
 				headers: {
@@ -152,10 +139,9 @@
 				},
 				body: JSON.stringify(data)
 			})
-				.then(response => console.log(response));
 		}
-		
-		
+
+
 
 
     </script>

@@ -20,7 +20,7 @@ namespace ListOfTODOs.Tests
 			dbContext.Database.EnsureCreated();
 			for (int i = 0; i < items; i++)
 			{
-				await dbContext.AddAsync(new ToDoItem(){ Id = i, Activity = "Activity" });
+				await dbContext.AddAsync(new ToDoItem(){Activity = "Activity" });
 			}
 			dbContext.SaveChanges();
 
@@ -52,7 +52,6 @@ namespace ListOfTODOs.Tests
 			//ACT
 			var item = new ToDoItem()
 			{
-				Id = 1,
 				Activity = "Ringa Carina"
 			};
 
@@ -72,11 +71,30 @@ namespace ListOfTODOs.Tests
 			var dbContext = await GetDbContext(5);
 			var itemRepository = new Repository(dbContext);
 
+			for (int i = 0; i < 2; i++)
+			{
+				await itemRepository.CreateItem(new ToDoItem { Activity = $"Måla hela världen {i} gånger." }) ; //Ska id vara med? Bör jag göra propertyn unik?
+			}
+
+			var updateItemWith = new ToDoItem { Activity = "Dansa hela natten lång." };
+			var itemToUpdate = await itemRepository.GetItemById(id);
+
+			var ItemBeforeUpdate = new ToDoItem
+			{
+				Activity = itemToUpdate.Activity
+			};
+
 			//ACT
+			ToDoItem result = await itemRepository.UpdateItemById(updateItemWith, id);
+
 			//ASSERT
+			result.Should().BeOfType<ToDoItem>();
+			result.Should().NotBeNull(); 
+			result.Should().NotBeSameAs(ItemBeforeUpdate);
+
 		}
 
-			[Theory]
+		[Theory]
 		[InlineData(1)]
 		public async void ListOfTODOs_DeleteItemById_ShouldReturnBool(int id)
 		{
@@ -91,5 +109,21 @@ namespace ListOfTODOs.Tests
 			result.Should().BeTrue();
 
 		}
+		//Kan väl inte bara köra med happy cases?
+		//[Theory]
+		//[InlineData(-5)]
+		//public async void ListOfTODOs_DeleteItemById_WhereIdIsNegative_ShouldReturnBool(int id)
+		//{
+		//	//ARRANGE
+		//	var dbContext = await GetDbContext(5);
+		//	var itemRepository = new Repository(dbContext);
+
+		//	//ACT
+		//	var result = await itemRepository.DeleteItemById(id);
+
+		//	//ASSERT
+		//	result.Should().BeFalse();
+
+		//}
 	}
 }

@@ -58,6 +58,7 @@ app.MapPut("/items/{id}", async (IRepository repository, ToDoItem updateItem, in
 	}
 
 	var result = await repository.UpdateItemById(updateItem, id);//här hämtar jag mitt item på ett visst id och lägger i result. 
+	//Behöver vi GetItemById här med? Nu finns metod för det. 
 	//Är denna som i api_lab2 bara bättre och kortare eller har jag missat någon bit?  på edit student. 
 
     if (result.Id != id)
