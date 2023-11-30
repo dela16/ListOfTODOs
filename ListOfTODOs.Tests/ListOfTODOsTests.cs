@@ -82,7 +82,7 @@ namespace ListOfTODOs.Tests
 		}
 
 		[Fact]
-		public async void ListOfTODOs_CreateItem_ShouldReturnBool()
+		public async void CreateItem_ShouldReturnBool()
 		{
 			//ARRANGE
 			var dbContext = await GetDbContext(5);
@@ -104,7 +104,7 @@ namespace ListOfTODOs.Tests
 		[Theory]
 		[InlineData(1)]
 		[InlineData(2)]
-		public async void ListOfTODOs_UpdateItemById_ShouldReturnItem(int id)
+		public async void UpdateItemById_ShouldReturnItem(int id)
 		{
 			//ARRANGE
 			var dbContext = await GetDbContext(5);
@@ -134,8 +134,8 @@ namespace ListOfTODOs.Tests
 		}
 
 		[Theory]
-		[InlineData(1)]
-		public async void ListOfTODOs_DeleteItemById_ShouldReturnBool(int id)
+		[InlineData(1)]//Även göra ett test som kollar om id finns? Eller det gör vi redan kanske i delete funktionen...
+		public async void DeleteItemById_ShouldReturnTrue(int id)
 		{
 			//ARRANGE
 			var dbContext = await GetDbContext(5);
@@ -151,7 +151,7 @@ namespace ListOfTODOs.Tests
 
 		[Theory]
 		[InlineData(-5)]
-		public async void ListOfTODOs_DeleteItemById_WhereIdIsNegative_ShouldReturnBool(int id)
+		public async void DeleteItemById_WhereIdIsNegative_ShouldReturnFalse(int id)
 		{
 			//ARRANGE
 			var dbContext = await GetDbContext(5);

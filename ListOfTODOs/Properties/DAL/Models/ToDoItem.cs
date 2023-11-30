@@ -1,5 +1,4 @@
-﻿
-namespace ToDoList.Properties.DAL.Models
+﻿namespace ToDoList.Properties.DAL.Models
 {
 	public class ToDoItem
 	{

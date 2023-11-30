@@ -27,11 +27,16 @@
 <div>
 	<br />
 	<h2>Info</h2>
-	<p>Om du bara vill markera bort en aktivitet så bockar du av rutan. Vill du radera en aktivitet helt från listan och databasen så skriver du in Id och klickar på den gröna knappen.
+	<p>Om du bara vill markera bort en aktivitet så bockar du av rutan. <br>
+		Vill du radera en aktivitet helt från listan och databasen så skriver du in Id längre ner och klickar på den gröna knappen. 
+		<br />
 		För framtiden: 
-		Lyckas inte duplicera li och checkbox mha html-placeholder isch.
-		Jag får tyvärr inte till att radera bara av att klicka i rutan. 
-		Jag får till alert för post knappen men inte för de andra knapparna, däremot kan du varkeran rader eller edit om du inte fyllt i input-fälten ordentligt. 
+		<br />
+		- Få till bättre och snyggare li och checkbox som går att duplicera, med hjälp av html på något sätt(?).
+		<br />
+		- Det ska räcka med att markera en ruta/ flera rutor och klicka delete för att radera. Inte behöva skriva in ID. 
+		<br />
+		- Snygga till HTML med ordentliga taggar och divs etc. 
 	</p>
 </div>
 
@@ -39,17 +44,17 @@
 
 @section Scripts{
 	<script>
-        let postItemBtn = document.getElementById("post-item");
-		let itemsOnToDoList = document.getElementById("itemsOnToDoList");
-		let deleteItemBtn = document.getElementById("delete-item");
-		let editItemBtn = document.getElementById("edit-item");
+        let postItemBtn = document.getElementById("post-item")
+		let itemsOnToDoList = document.getElementById("itemsOnToDoList")
+		let deleteItemBtn = document.getElementById("delete-item")
+		let editItemBtn = document.getElementById("edit-item")
 
 		async function updateItemList(){
 			fetch("/items")
 			.then(respons => respons.json())
 			.then(data => {
 				for(let i = 0; i < data.length; i++){
-					const checkbox = document.createElement("input");
+					const checkbox = document.createElement("input")
 					const li = document.createElement("li");
 					checkbox.type = "checkbox";
 					checkbox.addEventListener('click', () => {
@@ -57,69 +62,66 @@
 							li.style.textDecoration = "line-through" 
 						}
 						else{
-							li.style.textDecoration = "none";
+							li.style.textDecoration = "none"
 						}
 					});
 						
-					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
-					li.appendChild(checkbox);
-					itemsOnToDoList.appendChild(li);
-					
+					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`
+					li.appendChild(checkbox)
+					itemsOnToDoList.appendChild(li)
 				}
-			}
-			)
-		};
+			})
+		}
 
 		postItemBtn.addEventListener('click', async () => {
-			const postItemForm = document.getElementById("add-item-form").elements;
+			const postItemForm = document.getElementById("add-item-form").elements
 
 			const itemInfo =
 			{
 				Activity: postItemForm.namedItem("ItemToDo").value
-			};
+			}
 			
 			const clearInputField = {
 				Activity: postItemForm.namedItem("ItemToDo").value=''
-			};
-
-			const result = await postFunction("/items", itemInfo);
-			if(result.status != 200){
-				alert(`status = ${result.status}, Could not add item, try again.`);
 			}
 
-			await updateItemList();
+			const result = await postFunction("/items", itemInfo)
+			if(result.status != 200){
+				alert(`status = ${result.status}. Could not add item, try again.`)
+			}
+
+			await updateItemList()
         })
 
 		async function postFunction(url = '', data = {}){
-		console.log(JSON.stringify(data))
-		return fetch(url, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(data)
-		})
+			return fetch(url, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			})
 		}
 
 		editItemBtn.addEventListener('click', async () => {
-			const editItemForm = document.getElementById("item-to-edit-form").elements;
-			const editItemId = editItemForm.namedItem("ItemId").value;
-			const editItemInfo = {Activity: editItemForm.namedItem("ItemToEdit").value};
+			const editItemForm = document.getElementById("item-to-edit-form").elements
+			const editItemId = editItemForm.namedItem("ItemId").value
+			const editItemInfo = {Activity: editItemForm.namedItem("ItemToEdit").value}
 
 			const clearInputField = {
 				Activity: editItemForm.namedItem("ItemToEdit").value=''
-			};
-			
-			const result = await putItemInfo("/items/" + editItemId, editItemInfo);
-			if (result.status != 200) {
-				alert(`status = ${result.status}, try again.`);
 			}
-			await updateItemList();
+			
+			const result = await putItemInfo("/items/" + editItemId, editItemInfo)
+			if (result.status != 200) {
+				alert(`status = ${result.status}. Could not edit info, please try again.`)
+			}
+			await updateItemList()
 		})
 
 		async function putItemInfo (url = '', data = {}){
 			console.log(JSON.stringify(data))
-			fetch(url,{
+			return fetch(url,{
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json'
@@ -130,26 +132,26 @@
 
 
 		deleteItemBtn.addEventListener('click', async () => { 
-		const deleteItemForm = document.getElementById("delete-item-form").elements; 
+			const deleteItemForm = document.getElementById("delete-item-form").elements
 
-		const deleteItemInfo = deleteItemForm.namedItem("ItemToDelete").value;
+			const deleteItemInfo = deleteItemForm.namedItem("ItemToDelete").value
 
-		const clearInputField = {
-			Activity: deleteItemForm.namedItem("ItemToDelete").value = ''
-		};
+			const clearInputField = {
+				Activity: deleteItemForm.namedItem("ItemToDelete").value = ''
+			};
 
-		const result = await deleteFunction("/items/" + deleteItemInfo, {});
+			const result = await deleteFunction("/items/" + deleteItemInfo, {})
 		
-			if (result.status != 200)
-			{
-			alert(`status = ${result.status}, try again.`);
-			}
+				if (result.status != 200)
+				{
+					alert(`status = ${result.status}. You have to put in an id, please try again.`)
+				}
 
-			await updateItemList();//Ibland när jag raderar så uppdateras den direkt, ibland inte...
-		});
+				await updateItemList()
+		})
 
 		async function deleteFunction(url = '', data = {}){
-			fetch(url, {
+			return fetch(url, {
 				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json'
@@ -158,7 +160,7 @@
 			})
 		}
 
-		updateItemList();
+		updateItemList()
 
     </script>
 }

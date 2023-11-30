@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using ToDoList.Properties.DAL.Models;
 
 namespace ListOfTODOs.Properties.DAL.Contexts

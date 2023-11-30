@@ -33,7 +33,7 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 		{
 			var existingItem = await _dbContext.Items.FindAsync(id);
 
-			if (existingItem is null || existingItem.Id != id || existingItem.Id < 0)
+			if (existingItem.Activity is null || existingItem.Id != id || existingItem.Id < 0)
 				Results.BadRequest("Sorry, no item with that id.");
 				
 			existingItem.Activity = updatedItem.Activity;
@@ -45,12 +45,12 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 
 		public async Task<List<ToDoItem>> GetAllItems()
 		{
-			return await _dbContext.Items.ToListAsync(); 
+			return await _dbContext.Items.ToListAsync(); //det är ju här då om vi gör checkar.
 		}
 
 		public async Task<ToDoItem> GetItemById(int id)
 		{
-			return await _dbContext.Items.FindAsync(id);
+			return await _dbContext.Items.FindAsync(id);//och här.
 		}
 
 		public async Task<bool> DeleteItemById(int id)
