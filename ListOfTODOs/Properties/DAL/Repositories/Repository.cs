@@ -1,6 +1,7 @@
 ﻿using ListOfTODOs.Properties.DAL.Contexts;
 using ListOfTODOs.Properties.DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ToDoList.Properties.DAL.Models;
 
 namespace ListOfTODOs.Properties.DAL.Repositories
@@ -16,16 +17,13 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 
 		public async Task<bool> CreateItem(ToDoItem item)
 		{
-			if (item.Activity == null)
+			if (item.Activity.IsNullOrEmpty())
 			{
-				Results.BadRequest("Activity cannot be empty."); //Detta funkar inte
-				return false;
-				throw new ArgumentNullException(nameof(item));
+				Results.BadRequest("Activity cannot be empty.");
+				return false; 
 			}
 
 			await _dbContext.Items.AddAsync(item);
-				
-			//TODO Vill vi att programmet ska krascha and throw exception? 
 
 			await _dbContext.SaveChangesAsync();
 			return true; 
@@ -35,11 +33,10 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 		{
 			var existingItem = await _dbContext.Items.FindAsync(id);
 
-			if (existingItem.Id != id)
+			if (existingItem is null || existingItem.Id != id || existingItem.Id < 0)
 				Results.BadRequest("Sorry, no item with that id.");
-			//TODO Vill vi att programmet ska krascha and throw exception? 
-
-			existingItem.Activity = updatedItem.Activity;//få denna förklarad.
+				
+			existingItem.Activity = updatedItem.Activity;
 
 			_dbContext.Items.Update(existingItem);
 			await _dbContext.SaveChangesAsync();
@@ -48,30 +45,21 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 
 		public async Task<List<ToDoItem>> GetAllItems()
 		{
-			if (_dbContext.Items.Count() < 0)
-				Results.BadRequest("No items in list.");
-
 			return await _dbContext.Items.ToListAsync(); 
 		}
 
 		public async Task<ToDoItem> GetItemById(int id)
 		{
-			var item = await _dbContext.Items.FindAsync(id);
-			return item;
+			return await _dbContext.Items.FindAsync(id);
 		}
 
 		public async Task<bool> DeleteItemById(int id)
 		{
 			var itemToBeDeleted = await _dbContext.Items.FindAsync(id);
 
-			if (itemToBeDeleted is null)
+			if (itemToBeDeleted is null || itemToBeDeleted.Id != id|| itemToBeDeleted.Id < 0)
 			{
-				Results.BadRequest("You have to chose an id");
-				
-			}
-			else if (itemToBeDeleted.Id != id)
-			{
-				Results.BadRequest("No item has that id.");
+				return false;	
 			}
 
 			_dbContext.Remove(itemToBeDeleted);

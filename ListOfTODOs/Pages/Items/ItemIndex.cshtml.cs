@@ -7,7 +7,7 @@ namespace ListOfTODOs.Pages
     {
         private readonly ILogger<ItemIndexModel> _logger;
 
-        public ItemIndexModel(ILogger<ItemIndexModel> logger)//Får se om vi ska ha kvar detta. 
+        public ItemIndexModel(ILogger<ItemIndexModel> logger)
         {
             _logger = logger;
         }

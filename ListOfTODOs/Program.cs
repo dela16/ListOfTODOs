@@ -41,41 +41,37 @@ app.MapGet("/items", async (IRepository repository) =>
 });
 
 app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
-    {
-		if (item.Activity.IsNullOrEmpty())//Eller bara item.activity is null
+	{ 
+		var result = await repository.CreateItem(item);
+
+		if (result is false)
 			return Results.BadRequest("You need to write an activity.");
-			
 
-        var result = await repository.CreateItem(item);
-
-        return Results.Ok($"Item {result} was added to list.");
+		return Results.Ok($"Item {result} was added to list.");
     });
 
 app.MapPut("/items/{id}", async (IRepository repository, ToDoItem updateItem, int id) =>
 {
-	if (id <= 0 || updateItem.Activity is null)//Denna räcker inte.
+	if (id <= 0 || updateItem.Id.Equals("") ||updateItem.Activity.IsNullOrEmpty())
 	{
-		return Results.BadRequest("Invalid item id.");
+		return Results.BadRequest("Couldn't update item.");
 	}
 
-	var result = await repository.UpdateItemById(updateItem, id);//här hämtar jag mitt item på ett visst id och lägger i result. 
-	//Behöver vi GetItemById här med? Nu finns metod för det. 
-	//Är denna som i api_lab2 bara bättre och kortare eller har jag missat någon bit?  på edit student. 
+	var result = await repository.UpdateItemById(updateItem, id);
 
     if (result.Id != id)
-        return Results.NotFound($"{result.Id} No item with that id."); //Är det såhär man skriver den? 
+        return Results.NotFound($"{result.Id} No item with that id.");
 
     return Results.Ok($"{result} was updated.");
 });
 
 app.MapDelete("/items/{id}", async (IRepository repository, int id) =>
 {
-    var result = await repository.DeleteItemById(id);
+	var result = await repository.DeleteItemById(id);
+	if (result is false) 
+		return Results.BadRequest("Item could not be found, try another id.");
 
-	if (id <= 0) //Om id inte finns i lista? ex. raderad sen tidigare? Måste jag ha en getItemById?
-		return Results.BadRequest("Item could not be found, try anothe id.");
-
-	return Results.Ok("Item deleted");
+	return Results.Ok($"Item with id {result} was deleted");
 });
 
 

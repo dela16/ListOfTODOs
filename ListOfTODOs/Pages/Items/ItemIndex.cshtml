@@ -11,9 +11,6 @@
 <form id="list-items-form">
 	<nav id="taskList">
 		<ul class="mt-3" id="itemsOnToDoList">
-			<li>
-				<input type="checkbox" id="bock" />Såhär vill jag att det ska se ut
-			</li>
 		</ul>
 	</nav>
 </form>
@@ -30,7 +27,12 @@
 <div>
 	<br />
 	<h2>Info</h2>
-	<p>Om du bara vill markera bort en aktivitet så bockar du av rutan. Vill du radera en aktivitet helt från listan och databasen så skriver du in Id och klickar på den gröna knappen.</p>
+	<p>Om du bara vill markera bort en aktivitet så bockar du av rutan. Vill du radera en aktivitet helt från listan och databasen så skriver du in Id och klickar på den gröna knappen.
+		För framtiden: 
+		Lyckas inte duplicera li och checkbox mha html-placeholder isch.
+		Jag får tyvärr inte till att radera bara av att klicka i rutan. 
+		Jag får till alert för post knappen men inte för de andra knapparna, däremot kan du varkeran rader eller edit om du inte fyllt i input-fälten ordentligt. 
+	</p>
 </div>
 
 
@@ -46,13 +48,13 @@
 			fetch("/items")
 			.then(respons => respons.json())
 			.then(data => {
-				for(let i = 1; i < data.length; i++){
+				for(let i = 0; i < data.length; i++){
 					const checkbox = document.createElement("input");
 					const li = document.createElement("li");
 					checkbox.type = "checkbox";
 					checkbox.addEventListener('click', () => {
 						if(checkbox.checked){
-							li.style.textDecoration = "line-through" //Jag får i konsol online att li is not defined. Varför?
+							li.style.textDecoration = "line-through" 
 						}
 						else{
 							li.style.textDecoration = "none";
@@ -62,8 +64,10 @@
 					li.innerText = `Id: ${data[i].id} - ${data[i].activity}`;
 					li.appendChild(checkbox);
 					itemsOnToDoList.appendChild(li);
+					
 				}
-			})
+			}
+			)
 		};
 
 		postItemBtn.addEventListener('click', async () => {
@@ -78,15 +82,15 @@
 				Activity: postItemForm.namedItem("ItemToDo").value=''
 			};
 
-			let result = await postItemInfo("/items", itemInfo);
+			const result = await postFunction("/items", itemInfo);
 			if(result.status != 200){
-				alert(`status = ${result.status}, try again.`);
+				alert(`status = ${result.status}, Could not add item, try again.`);
 			}
 
 			await updateItemList();
         })
 
-		async function postItemInfo(url = '', data = {}){
+		async function postFunction(url = '', data = {}){
 		console.log(JSON.stringify(data))
 		return fetch(url, {
 			method: 'POST',
@@ -97,7 +101,7 @@
 		})
 		}
 
-		editItemBtn.addEventListener('click', async () => { //Denna uppdateras inte direkt, bara i db. Måste ladda om sidan.
+		editItemBtn.addEventListener('click', async () => {
 			const editItemForm = document.getElementById("item-to-edit-form").elements;
 			const editItemId = editItemForm.namedItem("ItemId").value;
 			const editItemInfo = {Activity: editItemForm.namedItem("ItemToEdit").value};
@@ -105,8 +109,11 @@
 			const clearInputField = {
 				Activity: editItemForm.namedItem("ItemToEdit").value=''
 			};
-
-			await putItemInfo("/items/" + editItemId, editItemInfo);
+			
+			const result = await putItemInfo("/items/" + editItemId, editItemInfo);
+			if (result.status != 200) {
+				alert(`status = ${result.status}, try again.`);
+			}
 			await updateItemList();
 		})
 
@@ -122,8 +129,8 @@
 		}
 
 
-		deleteItemBtn.addEventListener('click', async () => {
-		const deleteItemForm = document.getElementById("delete-item-form").elements; //Byta ut denna raden mot checkbox. 
+		deleteItemBtn.addEventListener('click', async () => { 
+		const deleteItemForm = document.getElementById("delete-item-form").elements; 
 
 		const deleteItemInfo = deleteItemForm.namedItem("ItemToDelete").value;
 
@@ -131,8 +138,14 @@
 			Activity: deleteItemForm.namedItem("ItemToDelete").value = ''
 		};
 
-			await deleteFunction("/items/" + deleteItemInfo, {});
-			await updateItemList();
+		const result = await deleteFunction("/items/" + deleteItemInfo, {});
+		
+			if (result.status != 200)
+			{
+			alert(`status = ${result.status}, try again.`);
+			}
+
+			await updateItemList();//Ibland när jag raderar så uppdateras den direkt, ibland inte...
 		});
 
 		async function deleteFunction(url = '', data = {}){
