@@ -32,12 +32,6 @@ body {
 
 li {
     list-style: none; 
-    display: flex; 
-    align-items: center; 
-}
-
-li input {
-    padding-left: 8px; /*Denna funkar ej. Vill ha checkbox till vänster*/
 }
 
 p{

@@ -25,32 +25,38 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 
 			await _dbContext.Items.AddAsync(item);
 
-			await _dbContext.SaveChangesAsync();
-			return true; 
+			var result = await _dbContext.SaveChangesAsync();
+
+			if(result > 0) return true;
+
+			return false;
 		}
 
-		public async Task<ToDoItem> UpdateItemById(ToDoItem updatedItem, int id)
+		public async Task<bool> UpdateItemById(ToDoItem updatedItem, int id)
 		{
 			var existingItem = await _dbContext.Items.FindAsync(id);
 
-			if (existingItem.Activity is null || existingItem.Id != id || existingItem.Id < 0)
-				Results.BadRequest("Sorry, no item with that id.");
+			if (existingItem is null || existingItem.Id != id || existingItem.Id < 0)
+				return false;
 				
 			existingItem.Activity = updatedItem.Activity;
 
 			_dbContext.Items.Update(existingItem);
-			await _dbContext.SaveChangesAsync();
-			return existingItem; 
+			var result = await _dbContext.SaveChangesAsync();
+
+			if(result > 0) return true;
+
+			return false;
 		}
 
-		public async Task<List<ToDoItem>> GetAllItems()
+		public async Task<List<ToDoItem>?> GetAllItems()
 		{
-			return await _dbContext.Items.ToListAsync(); //det är ju här då om vi gör checkar.
+			return await _dbContext.Items.ToListAsync();
 		}
 
-		public async Task<ToDoItem> GetItemById(int id)
+		public async Task<ToDoItem?> GetItemById(int id)
 		{
-			return await _dbContext.Items.FindAsync(id);//och här.
+			return await _dbContext.Items.FindAsync(id);
 		}
 
 		public async Task<bool> DeleteItemById(int id)
@@ -58,13 +64,16 @@ namespace ListOfTODOs.Properties.DAL.Repositories
 			var itemToBeDeleted = await _dbContext.Items.FindAsync(id);
 
 			if (itemToBeDeleted is null || itemToBeDeleted.Id != id|| itemToBeDeleted.Id < 0)
-			{
 				return false;	
-			}
+			
 
 			_dbContext.Remove(itemToBeDeleted);
-			await _dbContext.SaveChangesAsync();
-			return true; 
+
+			var result = await _dbContext.SaveChangesAsync();
+
+			if(result > 0) return true;
+
+			return false; 
 		}
 	}
 }

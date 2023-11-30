@@ -34,7 +34,7 @@ namespace ListOfTODOs.Tests
 			var itemRepository = new Repository(dbContext);
 
 			//ACT
-			List<ToDoItem> result = await itemRepository.GetAllItems();
+			List<ToDoItem>? result = await itemRepository.GetAllItems();
 
 			//ASSERT
 			result.Should().HaveCount(5);
@@ -50,35 +50,35 @@ namespace ListOfTODOs.Tests
 			var itemRepository = new Repository(dbContext);
 
 			//ACT
-			itemRepository.CreateItem(new ToDoItem());
+			await itemRepository.CreateItem(new ToDoItem());
 
-			ToDoItem result = await itemRepository.GetItemById(id);
+			ToDoItem? result = await itemRepository.GetItemById(id);
 
 			//ASSERT 
 			result.Should().BeOfType<ToDoItem>();
+			result.Should().NotBeNull();
 			result.Id.Should().Be(id);
 		}
 
 		[Theory]
-		[InlineData(-3)]//Vettefan om denna godkänns asså.
-		[InlineData(2748)]
+		[InlineData(-1)]
+		[InlineData(6)]
 		public async void GetItemById_WhereIdIsInNotInToDoListOrNegative_ShouldNotReturnItem(int id)
 		{
 			//ARRANGE
-			var dbContext = await GetDbContext(5);
+			var dbContext = await GetDbContext(0);
 			var itemRepository = new Repository(dbContext);
 
 			//ACT
 			for (int i = 0; i < 2; i++)
 			{
-				itemRepository.CreateItem(new ToDoItem{Id = id, Activity = "Sing" });
+				await itemRepository.CreateItem(new ToDoItem{Activity = "Sing" });
 			}
 
-			ToDoItem result = await itemRepository.GetItemById(id); //Här med det negativa talet. Vi skicka endast tillbaka en item. 
+			ToDoItem? result = await itemRepository.GetItemById(id);
 
 			//ASSERT 
-			result.Should().BeOfType<ToDoItem>();
-			result.Id.Should().NotBeInRange(1, 100);
+			result.Should().BeNull();
 		}
 
 		[Fact]
@@ -124,17 +124,15 @@ namespace ListOfTODOs.Tests
 			};
 
 			//ACT
-			ToDoItem result = await itemRepository.UpdateItemById(updateItemWith, id);
+			var result = await itemRepository.UpdateItemById(updateItemWith, id);
 
 			//ASSERT
-			result.Should().BeOfType<ToDoItem>();
-			result.Should().NotBeNull(); 
-			result.Should().NotBeSameAs(ItemBeforeUpdate);
+			result.Should().BeTrue();
 
 		}
 
 		[Theory]
-		[InlineData(1)]//Även göra ett test som kollar om id finns? Eller det gör vi redan kanske i delete funktionen...
+		[InlineData(1)]
 		public async void DeleteItemById_ShouldReturnTrue(int id)
 		{
 			//ARRANGE

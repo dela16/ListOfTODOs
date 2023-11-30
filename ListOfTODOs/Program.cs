@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using ListOfTODOs.Properties.DAL.Repositories.Interfaces;
 using ListOfTODOs.Properties.DAL.Repositories;
 using Microsoft.IdentityModel.Tokens;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,13 +19,10 @@ builder.Services.AddDbContext<ToDoListDbContext>(options =>
 
 builder.Services.AddTransient<IRepository, Repository>();
 
-// Add services to the container.
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
@@ -36,8 +32,8 @@ if (!app.Environment.IsDevelopment())
 app.MapGet("/items", async (IRepository repository) =>
 {
 	var result = await repository.GetAllItems();
-
-	return result.Count > 0 ? Results.Ok(result) : Results.NotFound("No items in your to do list.");
+	
+	return result != null ? Results.Ok(result) : Results.NotFound("No items in your to do list.");
 });
 
 app.MapPost("/items", async (IRepository repository, ToDoItem item) =>
@@ -59,10 +55,10 @@ app.MapPut("/items/{id}", async (IRepository repository, ToDoItem updateItem, in
 
 	var result = await repository.UpdateItemById(updateItem, id);
 
-    if (result.Id != id)
-        return Results.NotFound($"{result.Id} No item with that id.");
+    if (result == false)
+        return Results.NotFound("No item with that id.");
 
-    return Results.Ok($"{result} was updated.");
+    return Results.Ok("Item was updated.");
 });
 
 app.MapDelete("/items/{id}", async (IRepository repository, int id) =>
@@ -73,7 +69,6 @@ app.MapDelete("/items/{id}", async (IRepository repository, int id) =>
 
 	return Results.Ok($"Item with id {result} was deleted");
 });
-
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

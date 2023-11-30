@@ -32,6 +32,8 @@
 		<br />
 		För framtiden: 
 		<br />
+		- Ibland behöver du ladda om sidan för att få listan uppdaterad, ibland inte. Trots async/await.
+		<br />
 		- Få till bättre och snyggare li och checkbox som går att duplicera, med hjälp av html på något sätt(?).
 		<br />
 		- Det ska räcka med att markera en ruta/ flera rutor och klicka delete för att radera. Inte behöva skriva in ID. 
@@ -44,10 +46,12 @@
 
 @section Scripts{
 	<script>
-        let postItemBtn = document.getElementById("post-item")
-		let itemsOnToDoList = document.getElementById("itemsOnToDoList")
-		let deleteItemBtn = document.getElementById("delete-item")
-		let editItemBtn = document.getElementById("edit-item")
+        const postItemBtn = document.getElementById("post-item")
+		const itemsOnToDoList = document.getElementById("itemsOnToDoList")
+		const deleteItemBtn = document.getElementById("delete-item")
+		const editItemBtn = document.getElementById("edit-item")
+		const getFromDatabasebtn = document.getElementById("getFromDatabase")
+
 
 		async function updateItemList(){
 			fetch("/items")
@@ -74,18 +78,18 @@
 		}
 
 		postItemBtn.addEventListener('click', async () => {
-			const postItemForm = document.getElementById("add-item-form").elements
+			let postItemForm = document.getElementById("add-item-form").elements
 
-			const itemInfo =
+			let itemInfo =
 			{
 				Activity: postItemForm.namedItem("ItemToDo").value
 			}
 			
-			const clearInputField = {
+			let clearInputField = {
 				Activity: postItemForm.namedItem("ItemToDo").value=''
 			}
 
-			const result = await postFunction("/items", itemInfo)
+			let result = await postFunction("/items", itemInfo)
 			if(result.status != 200){
 				alert(`status = ${result.status}. Could not add item, try again.`)
 			}
@@ -104,21 +108,21 @@
 		}
 
 		editItemBtn.addEventListener('click', async () => {
-			const editItemForm = document.getElementById("item-to-edit-form").elements
-			const editItemId = editItemForm.namedItem("ItemId").value
-			const editItemInfo = {Activity: editItemForm.namedItem("ItemToEdit").value}
+			let editItemForm = document.getElementById("item-to-edit-form").elements
+			let editItemId = editItemForm.namedItem("ItemId").value
+			let editItemInfo = {Activity: editItemForm.namedItem("ItemToEdit").value}
 
-			const clearInputField = {
+			let clearInputField = {
 				Activity: editItemForm.namedItem("ItemToEdit").value=''
 			}
 			
-			const result = await putItemInfo("/items/" + editItemId, editItemInfo)
+			let result = await putItemInfo("/items/" + editItemId, editItemInfo)
 			if (result.status != 200) {
 				alert(`status = ${result.status}. Could not edit info, please try again.`)
 			}
 			await updateItemList()
 		})
-
+			
 		async function putItemInfo (url = '', data = {}){
 			console.log(JSON.stringify(data))
 			return fetch(url,{
@@ -130,24 +134,23 @@
 			})
 		}
 
-
 		deleteItemBtn.addEventListener('click', async () => { 
-			const deleteItemForm = document.getElementById("delete-item-form").elements
+			let deleteItemForm = document.getElementById("delete-item-form").elements
 
-			const deleteItemInfo = deleteItemForm.namedItem("ItemToDelete").value
+			let deleteItemInfo = deleteItemForm.namedItem("ItemToDelete").value
 
-			const clearInputField = {
+			let clearInputField = {
 				Activity: deleteItemForm.namedItem("ItemToDelete").value = ''
 			};
 
-			const result = await deleteFunction("/items/" + deleteItemInfo, {})
+			let result = await deleteFunction("/items/" + deleteItemInfo, {})
 		
-				if (result.status != 200)
-				{
-					alert(`status = ${result.status}. You have to put in an id, please try again.`)
-				}
+			if (result.status != 200)
+			{
+				alert(`status = ${result.status}. Invalid id, please try again.`)
+			}
 
-				await updateItemList()
+			await updateItemList()
 		})
 
 		async function deleteFunction(url = '', data = {}){
@@ -161,6 +164,6 @@
 		}
 
 		updateItemList()
-
+		
     </script>
 }
