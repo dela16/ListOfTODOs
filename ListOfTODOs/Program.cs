@@ -55,7 +55,7 @@ app.MapPut("/items/{id}", async (IRepository repository, ToDoItem updateItem, in
 
 	var result = await repository.UpdateItemById(updateItem, id);
 
-    if (result == false)
+    if (result is false)
         return Results.NotFound("No item with that id.");
 
     return Results.Ok("Item was updated.");
@@ -64,6 +64,7 @@ app.MapPut("/items/{id}", async (IRepository repository, ToDoItem updateItem, in
 app.MapDelete("/items/{id}", async (IRepository repository, int id) =>
 {
 	var result = await repository.DeleteItemById(id);
+
 	if (result is false) 
 		return Results.BadRequest("Item could not be found, try another id.");
 
