@@ -8,7 +8,6 @@ namespace ListOfTODOs.Tests
 {
 	public class ListOfTODOsTests
 	{
-		//Denna metod görs för att bygga upp tillgång till databasen
 		private async Task<ToDoListDbContext> GetDbContext(int items)
 		{
 			var options = new DbContextOptionsBuilder<ToDoListDbContext>()
@@ -28,7 +27,7 @@ namespace ListOfTODOs.Tests
 		}
 
 		[Fact]
-		public async void ListOfTODOs_GetFiveItems_ShouldReturnListOfItems()
+		public async void GetAllItems_WhereListContainsFiveItems_ShouldReturnListOfItems()
 		{
 			//ARRANGE
 			var dbContext = await GetDbContext(5);
@@ -36,10 +35,50 @@ namespace ListOfTODOs.Tests
 
 			//ACT
 			List<ToDoItem> result = await itemRepository.GetAllItems();
-			//ASSERT
 
+			//ASSERT
 			result.Should().HaveCount(5);
 			result.Should().NotBeNull();
+		}
+
+		[Theory]
+		[InlineData(4)]
+		public async void GetItemById_WhereIdIsInToDoList_ShouldReturnItem(int id)
+		{
+			//ARRANGE
+			var dbContext = await GetDbContext(5);
+			var itemRepository = new Repository(dbContext);
+
+			//ACT
+			itemRepository.CreateItem(new ToDoItem());
+
+			ToDoItem result = await itemRepository.GetItemById(id);
+
+			//ASSERT 
+			result.Should().BeOfType<ToDoItem>();
+			result.Id.Should().Be(id);
+		}
+
+		[Theory]
+		[InlineData(-3)]//Vettefan om denna godkänns asså.
+		[InlineData(2748)]
+		public async void GetItemById_WhereIdIsInNotInToDoListOrNegative_ShouldNotReturnItem(int id)
+		{
+			//ARRANGE
+			var dbContext = await GetDbContext(5);
+			var itemRepository = new Repository(dbContext);
+
+			//ACT
+			for (int i = 0; i < 2; i++)
+			{
+				itemRepository.CreateItem(new ToDoItem{Id = id, Activity = "Sing" });
+			}
+
+			ToDoItem result = await itemRepository.GetItemById(id); //Här med det negativa talet. Vi skicka endast tillbaka en item. 
+
+			//ASSERT 
+			result.Should().BeOfType<ToDoItem>();
+			result.Id.Should().NotBeInRange(1, 100);
 		}
 
 		[Fact]
@@ -73,7 +112,7 @@ namespace ListOfTODOs.Tests
 
 			for (int i = 0; i < 2; i++)
 			{
-				await itemRepository.CreateItem(new ToDoItem { Activity = $"Måla hela världen {i} gånger." }) ; //Ska id vara med? Bör jag göra propertyn unik?
+				await itemRepository.CreateItem(new ToDoItem { Activity = $"Måla hela världen {i} gånger." }) ;
 			}
 
 			var updateItemWith = new ToDoItem { Activity = "Dansa hela natten lång." };
@@ -109,21 +148,21 @@ namespace ListOfTODOs.Tests
 			result.Should().BeTrue();
 
 		}
-		//Kan väl inte bara köra med happy cases?
-		//[Theory]
-		//[InlineData(-5)]
-		//public async void ListOfTODOs_DeleteItemById_WhereIdIsNegative_ShouldReturnBool(int id)
-		//{
-		//	//ARRANGE
-		//	var dbContext = await GetDbContext(5);
-		//	var itemRepository = new Repository(dbContext);
 
-		//	//ACT
-		//	var result = await itemRepository.DeleteItemById(id);
+		[Theory]
+		[InlineData(-5)]
+		public async void ListOfTODOs_DeleteItemById_WhereIdIsNegative_ShouldReturnBool(int id)
+		{
+			//ARRANGE
+			var dbContext = await GetDbContext(5);
+			var itemRepository = new Repository(dbContext);
 
-		//	//ASSERT
-		//	result.Should().BeFalse();
+			//ACT
+			var result = await itemRepository.DeleteItemById(id);
 
-		//}
+			//ASSERT
+			result.Should().BeFalse();
+
+		}
 	}
 }
