@@ -29,7 +29,7 @@ namespace ListOfTODOs.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("activity")
+                    b.Property<string>("Activity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

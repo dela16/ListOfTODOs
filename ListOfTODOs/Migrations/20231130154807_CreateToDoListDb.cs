@@ -5,7 +5,7 @@
 namespace ListOfTODOs.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateToDoDb : Migration
+    public partial class CreateToDoListDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,7 @@ namespace ListOfTODOs.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    activity = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Activity = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

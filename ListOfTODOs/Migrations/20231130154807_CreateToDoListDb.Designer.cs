@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ListOfTODOs.Migrations
 {
     [DbContext(typeof(ToDoListDbContext))]
-    [Migration("20231127153020_CreateToDoDb")]
-    partial class CreateToDoDb
+    [Migration("20231130154807_CreateToDoListDb")]
+    partial class CreateToDoListDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,7 @@ namespace ListOfTODOs.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("activity")
+                    b.Property<string>("Activity")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
